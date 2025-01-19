@@ -1,0 +1,42 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment directories
+env/
+venv/
+.venv/
+
+# Test outputs
+*.parquet
+*.csv
+*.json
+
+# AWS credentials and config
+.aws/
+
+# Pytest cache
+.pytest_cache/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.out
+*.err
+
+# IDE and editor-specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Exclude specific test data if needed
+test-bucket/
