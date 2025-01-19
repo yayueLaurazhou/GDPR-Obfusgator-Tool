@@ -3,21 +3,21 @@ This is a python tool used to process data being ingested to AWS and intercept p
 It accepts CSV, JSON or Parquet format files in AWS S3 bucket, and it will create a byte-stream object containing an exact copy of the input file but with the
 sensitive data replaced with obfuscated strings.
 
-Installation
+****Installation****
 
-Clone the Repository:
+**Clone the Repository:**
 
 git clone https://github.com/yayueLaurazhou/GDPR-Obfusgator-Tool.git
 cd GDPR-Obfusgator-Tool
 
-Install Dependencies:
+**Install Dependencies:**
 
 Install the required Python libraries listed in requirements.txt:
 
 pip install -r requirements.txt
 
 
-Usage
+****Usage****
 
 Use the obfuscator_tool.py obfuscate_file function with the following command:
 
