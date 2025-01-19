@@ -43,11 +43,12 @@ obscured_byte_stream = obfuscator_file(event)
 The event must be a dictionary with given S3 file location and field to obscure
 
 Example:
-  
+```
   {
         file_to_obfuscate": "s3://my_bucket/file1.csv", # besides csv, can also be JSON or Parquet files
         "pii_fields": ["name", "email_address"]
   }
+```
 
 The obscured_byte_stream is of io.BytesIO type, which contains the Byte-stream of the obfuscated file content
 
