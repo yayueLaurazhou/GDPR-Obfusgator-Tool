@@ -162,5 +162,6 @@ def test_unsupported_file_type():
 
 def test_s3_file_not_found(s3_mock_setup):
     invalid_event = {"file_to_obfuscate": "s3://test-bucket/nonexistent.csv", "pii_fields": ["name"]}
-    with pytest.raises(ClientError, match="does not exist in bucket"):
+    with pytest.raises(FileNotFoundError, match="does not exist in bucket"):
         obfuscate_file(invalid_event)
+

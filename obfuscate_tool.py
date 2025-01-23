@@ -5,6 +5,7 @@ import json
 import io
 import logging
 import pandas as pd
+from botocore.exceptions import ClientError
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
@@ -25,35 +26,45 @@ def obfuscate_file(event: dict):
     Returns:
         io.BytesIO: Byte-stream of the obfuscated file content.
     """
-    # Parse input parameters
+   # Extract input parameters
     s3_file_path = event.get("file_to_obfuscate")
     pii_fields = event.get("pii_fields", [])
 
-    if not s3_file_path or not pii_fields:
-        raise ValueError("Both 'file_to_obfuscate' and 'pii_fields' must be provided in the input JSON.")
+    # Validate input
+    if not s3_file_path:
+        raise ValueError("'file_to_obfuscate' must be provided in the input JSON.")
+    if not pii_fields or not isinstance(pii_fields, list):
+        raise ValueError("'pii_fields' must be a non-empty list.")
 
     # Extract S3 bucket and key
-    s3_bucket, s3_key = parse_s3_path(s3_file_path)
-    file_type = get_file_type(s3_key)
+    try:
+        s3_bucket, s3_key = parse_s3_path(s3_file_path)
+    except ValueError as e:
+        raise ValueError(f"Invalid S3 file path: {s3_file_path}. {str(e)}")
 
-    # Download file from S3
-    file_content = download_file_from_s3(s3_bucket, s3_key)
+    # Determine file type
+    file_type = get_file_type(s3_key)
+    if file_type not in ["csv", "json", "parquet"]:
+        raise ValueError(f"Unsupported file type: {file_type}. Supported types are: 'csv', 'json', 'parquet'.")
+
+    # Download the file from S3
+    try:
+        file_content = download_file_from_s3(s3_bucket, s3_key)
+    except ClientError as e:
+        if e.response['Error']['Code'] == "NoSuchKey":
+            raise FileNotFoundError(f"The file '{s3_key}' does not exist in bucket '{s3_bucket}'.")
+        raise  # Re-raise the original exception if it's not a "NoSuchKey" error
 
     # Obfuscate based on file type
     if file_type == "csv":
         obfuscated_data = process_csv(file_content, pii_fields)
         return convert_to_csv_stream(obfuscated_data)
-
     elif file_type == "json":
         obfuscated_data = process_json(file_content, pii_fields)
         return convert_to_json_stream(obfuscated_data)
-
     elif file_type == "parquet":
         obfuscated_data = process_parquet(file_content, pii_fields)
         return convert_to_parquet_stream(obfuscated_data)
-
-    else:
-        raise ValueError(f"Unsupported file type: {file_type}")
 
 
 def parse_s3_path(s3_path: str):
