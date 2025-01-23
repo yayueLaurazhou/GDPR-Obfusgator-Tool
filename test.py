@@ -4,6 +4,7 @@ import json
 import pandas as pd
 from moto import mock_aws
 import boto3
+from botocore.exceptions import ClientError
 from obfuscate_tool import (
     obfuscate_file,
     parse_s3_path,
@@ -135,3 +136,31 @@ def test_obfuscate_file(event, expected_output, s3_mock_setup):
     elif file_type == "parquet":
         result_df = pd.read_parquet(output_stream)
         assert result_df.equals(expected_output)
+
+
+# ************** New Tests Added *************
+# Error-Handling Tests
+def test_missing_file_to_obfuscate():
+    invalid_event = {"pii_fields": ["name", "email"]}
+    with pytest.raises(ValueError, match="'file_to_obfuscate' must be provided"):
+        obfuscate_file(invalid_event)
+
+def test_empty_pii_fields():
+    invalid_event = {"file_to_obfuscate": "s3://test-bucket/sample.csv", "pii_fields": []}
+    with pytest.raises(ValueError, match="'pii_fields' must be a non-empty list"):
+        obfuscate_file(invalid_event)
+
+def test_invalid_s3_path():
+    invalid_event = {"file_to_obfuscate": "invalid_path/sample.csv", "pii_fields": ["name"]}
+    with pytest.raises(ValueError, match="Invalid S3 file path"):
+        obfuscate_file(invalid_event)
+
+def test_unsupported_file_type():
+    invalid_event = {"file_to_obfuscate": "s3://test-bucket/sample.txt", "pii_fields": ["name"]}
+    with pytest.raises(ValueError, match="Unsupported file type"):
+        obfuscate_file(invalid_event)
+
+def test_s3_file_not_found(s3_mock_setup):
+    invalid_event = {"file_to_obfuscate": "s3://test-bucket/nonexistent.csv", "pii_fields": ["name"]}
+    with pytest.raises(ClientError, match="does not exist in bucket"):
+        obfuscate_file(invalid_event)
