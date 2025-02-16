@@ -5,6 +5,7 @@ import json
 import io
 import logging
 import pandas as pd
+import argparse
 from botocore.exceptions import ClientError
 
 # Set up logging
@@ -231,3 +232,28 @@ def convert_to_parquet_stream(obfuscated_data: pd.DataFrame):
     obfuscated_data.to_parquet(output_stream, index=False)
     output_stream.seek(0)
     return output_stream
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Obfuscate files in S3 bucket.")
+    parser.add_argument("--file", required=True, help="S3 path to the file to obfuscate (e.g., s3://bucket/file.csv)")
+    parser.add_argument("--pii-fields", required=True, nargs='+', help="List of PII fields to obfuscate (e.g., name email_address)")
+
+    # Parse the command-line arguments
+    args = parser.parse_args()
+
+    # Prepare the event dictionary
+    event = {
+        "file_to_obfuscate": args.file,
+        "pii_fields": args.pii_fields
+    }
+
+    try:
+        obfuscated_file = obfuscate_file(event)
+        print(f"Obfuscated file content: {obfuscated_file.getvalue()}")
+    except Exception as e:
+        print(f"Error: {str(e)}")
+
+
+if __name__ == "__main__":
+    main()
