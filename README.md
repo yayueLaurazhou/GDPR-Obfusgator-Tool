@@ -13,23 +13,35 @@ git clone https://github.com/yayueLaurazhou/GDPR-Obfusgator-Tool.git
 cd GDPR-Obfusgator-Tool
 ```
 
-**Install Dependencies:**
+**Create Virtual Environment and Install Dependencies:**
 
-Install the required Python libraries listed in requirements.txt:
+The first step is to set up a virtual environment and install all necessary dependencies. This can be done using the venv target in the Makefile:
 
-```pip install -r -W requirements.txt```
+```make venv```
 
-**Run Tests:**
+**Do PEP8 Check and Run Unit tests:**
 
-To validate the functionality of the tool, you can run the tests provided in the test.py file. Use the following command:
+To validate the functionality of the tool and PEP8 Standard, you can run the tests provided in the test.py file. Use the following commands:
 
-```pytest test.py```
+```make pep8-check```
 
-The test.py file contains unit tests and integration tests designed to verify:
+```make test```
+
+It will verify:
 
 File Processing: Ensures that input files are correctly read and obfuscated.
 
 AWS S3 Integration: Tests the interaction with AWS S3 to ensure files are correctly accessed and written back
+
+Or you instead of the above, you can simply run 
+
+```make all```
+ 
+ and the vitual environment, dependencies, tests will all run for you 
+
+if you see ```All checks and tests passed!```
+
+you can proceed to the next stage to to use the tool
 
 ****Usage****
 

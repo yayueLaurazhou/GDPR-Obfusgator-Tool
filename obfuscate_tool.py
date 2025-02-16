@@ -12,6 +12,7 @@ from botocore.exceptions import ClientError
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
 def obfuscate_file(event: dict):
     """
     Main function to handle file obfuscation for CSV, JSON, and Parquet.
@@ -27,7 +28,7 @@ def obfuscate_file(event: dict):
     Returns:
         io.BytesIO: Byte-stream of the obfuscated file content.
     """
-   # Extract input parameters
+    # Extract input parameters
     s3_file_path = event.get("file_to_obfuscate")
     pii_fields = event.get("pii_fields", [])
 
@@ -46,14 +47,18 @@ def obfuscate_file(event: dict):
     # Determine file type
     file_type = get_file_type(s3_key)
     if file_type not in ["csv", "json", "parquet"]:
-        raise ValueError(f"Unsupported file type: {file_type}. Supported types are: 'csv', 'json', 'parquet'.")
+        raise ValueError(
+            f"Unsupported file type: {file_type}. Supported types are: 'csv', 'json', 'parquet'."
+        )
 
     # Download the file from S3
     try:
         file_content = download_file_from_s3(s3_bucket, s3_key)
     except ClientError as e:
-        if e.response['Error']['Code'] == "NoSuchKey":
-            raise FileNotFoundError(f"The file '{s3_key}' does not exist in bucket '{s3_bucket}'.")
+        if e.response["Error"]["Code"] == "NoSuchKey":
+            raise FileNotFoundError(
+                f"The file '{s3_key}' does not exist in bucket '{s3_bucket}'."
+            )
         raise  # Re-raise the original exception if it's not a "NoSuchKey" error
 
     # Obfuscate based on file type
@@ -80,11 +85,11 @@ def parse_s3_path(s3_path: str):
     """
     if not s3_path.startswith("s3://"):
         raise ValueError("Invalid S3 path. It must start with 's3://'.")
-    
+
     path_parts = s3_path[5:].split("/", 1)
     if len(path_parts) != 2:
         raise ValueError("S3 path must include both bucket and key.")
-    
+
     return path_parts[0], path_parts[1]
 
 
@@ -199,7 +204,9 @@ def convert_to_csv_stream(obfuscated_data: dict):
         io.BytesIO: Byte-stream of the CSV data.
     """
     output_stream = io.StringIO()
-    writer = csv.DictWriter(output_stream, fieldnames=obfuscated_data["header"],lineterminator='\n')
+    writer = csv.DictWriter(
+        output_stream, fieldnames=obfuscated_data["header"], lineterminator="\n"
+    )
     writer.writeheader()
     writer.writerows(obfuscated_data["rows"])
     return io.BytesIO(output_stream.getvalue().encode("utf-8"))
@@ -236,17 +243,23 @@ def convert_to_parquet_stream(obfuscated_data: pd.DataFrame):
 
 def main():
     parser = argparse.ArgumentParser(description="Obfuscate files in S3 bucket.")
-    parser.add_argument("--file", required=True, help="S3 path to the file to obfuscate (e.g., s3://bucket/file.csv)")
-    parser.add_argument("--pii-fields", required=True, nargs='+', help="List of PII fields to obfuscate (e.g., name email_address)")
+    parser.add_argument(
+        "--file",
+        required=True,
+        help="S3 path to the file to obfuscate (e.g., s3://bucket/file.csv)",
+    )
+    parser.add_argument(
+        "--pii-fields",
+        required=True,
+        nargs="+",
+        help="List of PII fields to obfuscate (e.g., name email_address)",
+    )
 
     # Parse the command-line arguments
     args = parser.parse_args()
 
     # Prepare the event dictionary
-    event = {
-        "file_to_obfuscate": args.file,
-        "pii_fields": args.pii_fields
-    }
+    event = {"file_to_obfuscate": args.file, "pii_fields": args.pii_fields}
 
     try:
         obfuscated_file = obfuscate_file(event)
