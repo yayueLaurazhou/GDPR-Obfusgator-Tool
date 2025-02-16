@@ -36,14 +36,15 @@ It will verify:
 File Processing: Ensures that input files are correctly read and obfuscated.
 
 AWS S3 Integration: Tests the interaction with AWS S3 to ensure files are correctly accessed and written back
-
-
+</br>
 
 
 
 Or you instead of the above, you can simply run 
 
-```make all```
+```
+make all
+```
  
  and the vitual environment, dependencies, tests will all run for you 
 
@@ -62,16 +63,22 @@ For example, if your bucket is named my-obfuscation-bucket and the file is named
 
 Below are 2 examples of how to use the function
 
-1. Command line usage
+### 1. Command line usage
 
---file: Required argument for the S3 file path.
+--file: Required argument for the S3 file path.</br>
 --pii-fields: Required argument for the list of PII fields to obfuscate. You can pass multiple fields separated by spaces.
 
 For example, to Obfuscate a CSV file from S3, obfuscate name and email_address field:
 
-```python obfuscate_tool.py --file "s3://my_bucket/file1.csv" --pii-fields name email_address```
+```
+python obfuscate_tool.py --file "s3://my_bucket/file1.csv" --pii-fields name email_address
 
-2. Integrate the function in your project by invoking the obfuscator_tool.py obfuscate_file function in other file:
+```
+</br>
+</br>
+
+
+### 2. Integrate the function in your project by invoking the obfuscator_tool.py obfuscate_file function in other file:
 
 ```
 import obfuscate_file from obfuscator_tool
@@ -90,7 +97,8 @@ Example:
 ```
 
 The obscured_byte_stream is of io.BytesIO type, which contains the Byte-stream of the obfuscated file content
-
+</br>
+</br>
 
 
 ****Accessing the Obfuscated File Output****
@@ -127,7 +135,8 @@ s3_client = boto3.client('s3')
 # Save the obfuscated content back to S3
 s3_client.put_object(Bucket='your_bucket_name', Key='obfuscated_output.csv', Body=obfuscated_file)
 ```
-
+</br>
+</br>
 
 
 
