@@ -39,8 +39,17 @@ After uploading the file in S3 bucket, you will need to pass the S3 URI to the f
 For example, if your bucket is named my-obfuscation-bucket and the file is named student_data.csv, the S3 URI would be:
 ```s3://my-obfuscation-bucket/student_data.csv```
 
+Below are 2 examples of how to use the function
 
-1. Invoke the obfuscator_tool.py obfuscate_file function in other file:
+1. Command line usage
+
+--file: Required argument for the S3 file path.
+--pii-fields: Required argument for the list of PII fields to obfuscate. You can pass multiple fields separated by spaces.
+
+For example, to Obfuscate a CSV file from S3, obfuscate name and email_address field:
+```python obfuscate_tool.py --file "s3://my_bucket/file1.csv" --pii-fields name email_address```
+
+2. Integrate the function in your project by invoking the obfuscator_tool.py obfuscate_file function in other file:
 
 ```
 import obfuscate_file from obfuscator_tool
