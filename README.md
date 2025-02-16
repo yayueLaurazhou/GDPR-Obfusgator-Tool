@@ -59,6 +59,7 @@ Below are 2 examples of how to use the function
 --pii-fields: Required argument for the list of PII fields to obfuscate. You can pass multiple fields separated by spaces.
 
 For example, to Obfuscate a CSV file from S3, obfuscate name and email_address field:
+
 ```python obfuscate_tool.py --file "s3://my_bucket/file1.csv" --pii-fields name email_address```
 
 2. Integrate the function in your project by invoking the obfuscator_tool.py obfuscate_file function in other file:
