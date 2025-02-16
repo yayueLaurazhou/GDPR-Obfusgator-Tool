@@ -72,7 +72,6 @@ For example, to Obfuscate a CSV file from S3, obfuscate name and email_address f
 
 ```
 python obfuscate_tool.py --file "s3://my_bucket/file1.csv" --pii-fields name email_address
-
 ```
 </br>
 </br>
