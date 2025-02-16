@@ -4,7 +4,8 @@ It accepts CSV, JSON or Parquet format files in AWS S3 bucket, and it will creat
 
 You can invoke the function in your AWS LAMBDA function or EC2 instance for file obfuscation purpose. 
 
-****Installation****
+<h2>Installation</h2>
+
 
 **Clone the Repository:**
 
@@ -13,11 +14,14 @@ git clone https://github.com/yayueLaurazhou/GDPR-Obfusgator-Tool.git
 cd GDPR-Obfusgator-Tool
 ```
 
+
 **Create Virtual Environment and Install Dependencies:**
 
 The first step is to set up a virtual environment and install all necessary dependencies. This can be done using the venv target in the Makefile:
 
 ```make venv```
+
+
 
 **Do PEP8 Check and Run Unit tests:**
 
@@ -33,6 +37,10 @@ File Processing: Ensures that input files are correctly read and obfuscated.
 
 AWS S3 Integration: Tests the interaction with AWS S3 to ensure files are correctly accessed and written back
 
+
+
+
+
 Or you instead of the above, you can simply run 
 
 ```make all```
@@ -43,7 +51,8 @@ if you see ```All checks and tests passed!```
 
 you can proceed to the next stage to to use the tool
 
-****Usage****
+
+<h2>Usage</h2>
 
 You must have a file in CSV, JSON, or Parquet format in S3 bucket to use this function 
 After uploading the file in S3 bucket, you will need to pass the S3 URI to the function. The S3 URI is in the format:
@@ -82,6 +91,8 @@ Example:
 
 The obscured_byte_stream is of io.BytesIO type, which contains the Byte-stream of the obfuscated file content
 
+
+
 ****Accessing the Obfuscated File Output****
 
 When you run the obfuscation tool, the obfuscated file content is returned as a byte stream (io.BytesIO). The byte stream can be handled in various ways, depending on what you want to do with the obfuscated data. Below are examples of how to access and save the output.
@@ -116,6 +127,9 @@ s3_client = boto3.client('s3')
 # Save the obfuscated content back to S3
 s3_client.put_object(Bucket='your_bucket_name', Key='obfuscated_output.csv', Body=obfuscated_file)
 ```
+
+
+
 
 ****Working with Different File Formats****
 
